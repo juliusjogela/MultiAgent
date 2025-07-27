@@ -13,11 +13,15 @@ results_bp = Blueprint("results", __name__)
 
 @results_bp.route("/results", methods=["GET"])
 def get_results():
-    simulation_id = request.args.get("id")
-    index = request.args.get("i")
-    show_messages = False if request.args.get("show_messages") == "no" else True
+    try:
+        simulation_id = request.args.get("id")
+        if not simulation_id:
+            return jsonify({"error": "Missing 'id' parameter"}), 400
+            
+        index = request.args.get("i")
+        show_messages = False if request.args.get("show_messages") == "no" else True
 
-    results = simulation_results.retrieve(simulation_id)
+        results = simulation_results.retrieve(simulation_id)
     if len(results) == 0:
         if simulation_catalog.exists(simulation_id):
             return jsonify({
